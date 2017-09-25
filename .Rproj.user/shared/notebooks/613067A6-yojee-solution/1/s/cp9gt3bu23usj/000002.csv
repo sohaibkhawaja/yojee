@@ -1,0 +1,3 @@
+"0","# Define Central Distribution Point location"
+"0","loc.cdp <- data.frame(lat = 11.552931, lon = 104.933636)"
+"0","loc.cdp"

@@ -1,0 +1,3 @@
+"0","# Clean dataset, filter invalid records"
+"0","loc.nan <- loc.raw[(is.na(loc.raw$lon)), ]"
+"0","loc.nan"

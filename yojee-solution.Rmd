@@ -1,0 +1,114 @@
+---
+title: "Yojee - Case"
+output: html_notebook
+---
+
+Case 1:  A delivery company IParcel delivers packages to certain locations every day. Below is a sample set of the lat and lngs.
+•	1 parcel per location for the sake of simplicity
+•	There are n number of delivery boys riding motorcycles available
+
+The purpose of this problem is to come up with an efficient path for each of the 25 drivers from a central distribution point (11.552931,104.933636).
+
+Things we expect
+•	Code on a git repo
+•	Efficiency in running the problem
+•	Any visualisation that you can think of
+•	Ideas on how you plan to scale this if the number of locations increase (more warehouses and distribution points). Also how this can be translated to engineering infrastructure if need be.
+•	Problem statement is purposefully at a very high level. If you have any new ideas we didn’t think of, would be a bonus.
+
+*Please also find the attached sample csv file.
+
+```{r setup}
+# set options and libraries
+library("sp")
+library("maptools")
+library("TSP")
+
+setwd(".\\")
+options(digits=9)
+
+```
+
+
+```{r}
+# Read source data from locations.csv file
+loc.raw <- read.csv(file = "locations.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+str(loc.raw)
+```
+
+```{r}
+# Check first few rows of data
+head(loc.raw)
+```
+
+```{r}
+# Clean dataset, filter invalid records
+loc.nan <- loc.raw[(is.na(loc.raw$lon)), ]
+loc.nan
+```
+
+
+```{r}
+# Check cleaned dataset
+loc.new <- loc.raw[(!is.na(loc.raw$lon)), ]
+loc.new$lat <- as.numeric(loc.new$lat)
+str(loc.new)
+
+```
+
+```{r}
+# Function to calculate distance (Euclidean Distance) in kilometers between two points.
+# Reference : https://conservationecology.wordpress.com/2013/06/30/distance-between-two-points-in-r/
+
+earth.dist <- function (long1, lat1, long2, lat2){
+rad <- pi/180
+a1 <- lat1 * rad
+a2 <- long1 * rad
+b1 <- lat2 * rad
+b2 <- long2 * rad
+dlon <- b2 - a2
+dlat <- b1 - a1
+a <- (sin(dlat/2))^2 + cos(a1) * cos(b1) * (sin(dlon/2))^2
+c <- 2 * atan2(sqrt(a), sqrt(1 - a))
+R <- 6378.145
+d <- R * c
+return(d)}
+```
+
+
+```{r}
+# Define Central Distribution Point location
+
+loc.cdp <- data.frame(lat = 11.552931, lon = 104.933636)
+loc.cdp
+```
+
+
+```{r}
+# Calculate distance from Central Distribution Point to each delivery location
+
+loc.new$km <- earth.dist(loc.cdp$lon, loc.cdp$lat, loc.new$lon, loc.new$lat)
+head(loc.new)
+```
+
+
+```{r}
+# Check last few records
+
+tail(loc.new)
+```
+
+
+```{r}
+# Check summary of dataset
+
+summary(loc.new)
+```
+
+```{r}
+# box and whisker plot for reviewing distribution
+
+boxplot(loc.new, use.cols = TRUE, horizontal = TRUE)
+```
+
+

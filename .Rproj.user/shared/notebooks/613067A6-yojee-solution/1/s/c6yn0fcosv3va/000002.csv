@@ -1,0 +1,2 @@
+"0","# box and whisker plot for reviewing distribution"
+"0","boxplot(loc.new, use.cols = TRUE, horizontal = TRUE)"

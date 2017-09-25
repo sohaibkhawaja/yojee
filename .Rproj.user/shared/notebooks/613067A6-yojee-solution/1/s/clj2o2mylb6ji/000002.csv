@@ -1,0 +1,6 @@
+"0","# set options and libraries"
+"0","library(""sp"")"
+"0","library(""maptools"")"
+"0","library(""TSP"")"
+"0","setwd("".\\"")"
+"0","options(digits=9)"
