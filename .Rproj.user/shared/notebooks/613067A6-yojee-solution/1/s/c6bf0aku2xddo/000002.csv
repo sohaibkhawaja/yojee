@@ -1,3 +1,0 @@
-"0","# Calculate distance from Central Distribution Point to each delivery location"
-"0","loc.new$km <- earth.dist(loc.cdp$lon, loc.cdp$lat, loc.new$lon, loc.new$lat)"
-"0","head(loc.new)"

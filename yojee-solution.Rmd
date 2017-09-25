@@ -18,11 +18,16 @@ Things we expect
 
 *Please also find the attached sample csv file.
 
-```{r setup}
+```{r}
 # set options and libraries
+library("TSP")
+library("maps")
 library("sp")
 library("maptools")
-library("TSP")
+
+data("USCA50")
+data("USCA312")
+data("USCA312_map")
 
 setwd(".\\")
 options(digits=9)
@@ -105,10 +110,75 @@ tail(loc.new)
 summary(loc.new)
 ```
 
-```{r}
+```{r, fig.width=11}
 # box and whisker plot for reviewing distribution
 
-boxplot(loc.new, use.cols = TRUE, horizontal = TRUE)
+boxplot(loc.new[(loc.new$km < 5),], use.cols = TRUE, horizontal = TRUE)
 ```
 
+```{r}
+# TSP solver methods
+methods <- c("nearest_insertion", "farthest_insertion", "cheapest_insertion", "arbitrary_insertion", "nn", "repetitive_nn", "two_opt")
+```
+
+```{r}
+# Tour comparison for 50 US cities.
+tours <- sapply(methods, FUN = function(m) solve_TSP(USCA50, method = m),simplify = FALSE)
+tours
+```
+
+```{r, fig.width=11}
+dotchart(sort(c(sapply(tours, tour_length), optimal = 15000)), xlab = "tour length", xlim = c(10000, 25000))
+```
+
+```{r}
+data("USCA312")
+tsp <- insert_dummy(USCA312, label = "cut")
+tsp
+
+concorde_path("C:\\Concorde")
+
+
+# Tour comparison for 313 US cities.
+tours <- sapply(methods, FUN = function(m) solve_TSP(tsp, method = m),simplify = FALSE)
+tours
+```
+
+```{r, fig.width=11}
+dotchart(sort(c(sapply(tours, tour_length), optimal = 35000)), xlab = "tour length", xlim = c(30000, 50000))
+```
+```{r}
+mytour <- solve_TSP(tsp, method = "two_opt")
+mytour
+```
+```{r}
+path <- cut_tour(mytour, "cut")
+head(labels(path))
+```
+```{r}
+tail(labels(path))
+```
+
+```{r}
+plot_path <- function(path){
+plot(as(USCA312_coords, "Spatial"), axes = TRUE)
+plot(USCA312_basemap, add = TRUE, col = "gray")
+points(USCA312_coords, pch = 3, cex = 0.4, col = "red")
+path_line <- SpatialLines(list(Lines(list(Line(USCA312_coords[path,])), ID="1")))
+plot(path_line, add=TRUE, col = "black")
+points(USCA312_coords[c(head(path,1), tail(path,1)),], pch = 19, col = "black")
+}
+```
+
+```{r, fig.width=11}
+plot_path(path)
+```
+
+```{r}
+# Vehicle Stop coordinates
+veh.stop <- loc.new[1:2]
+coordinates(veh.stop) <- c("lon","lat")
+summary(veh.stop)
+
+```
 
